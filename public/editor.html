@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML PPT 编辑器</title>
+  <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+<div id="app">
+  <!-- 顶部工具栏 -->
+  <div class="toolbar">
+    <span class="logo">PPT Editor</span>
+    <div class="sep"></div>
+    <button class="tb-btn" id="btn-open" title="打开文件">📂 打开</button>
+    <button class="tb-btn" id="btn-new" title="新建演示文稿">📄 新建</button>
+    <button class="tb-btn" id="btn-save" title="保存 Ctrl+S">💾 保存</button>
+    <button class="tb-btn" id="btn-export" title="导出为 HTML">📥 导出</button>
+    <div class="sep"></div>
+    <button class="tb-btn" id="btn-undo" title="撤销 Ctrl+Z">↩ 撤销</button>
+    <button class="tb-btn" id="btn-redo" title="重做 Ctrl+Y">↪ 重做</button>
+    <div class="sep"></div>
+    <button class="tb-btn" id="btn-add-slide" title="新建幻灯片">➕ 新建页</button>
+    <button class="tb-btn" id="btn-dup-slide" title="复制当前页">📋 复制页</button>
+    <button class="tb-btn danger" id="btn-del-slide" title="删除当前页">🗑️ 删除页</button>
+    <div class="sep"></div>
+    <button class="tb-btn" id="btn-insert-img" title="插入图片">🖼️ 插图</button>
+    <button class="tb-btn" id="btn-theme" title="切换主题">🎨 主题</button>
+    <div class="sep"></div>
+    <button class="tb-btn" id="btn-play" title="播放演示">▶️ 播放</button>
+    <button class="tb-btn" id="btn-tts" title="语音朗读 T">🔊 TTS</button>
+    <div class="spacer"></div>
+    <button class="tb-btn" id="btn-help" title="快捷键帮助 (?)" style="font-size:16px;font-weight:700">?</button>
+    <span class="file-name" id="file-name">未打开文件</span>
+  </div>
+
+  <!-- 主内容区 -->
+  <div class="main">
+    <!-- 左侧：幻灯片列表 -->
+    <div class="sidebar-left">
+      <div class="panel-title">幻灯片</div>
+      <div class="slide-list" id="slide-list"></div>
+    </div>
+
+    <!-- 中间：预览区 -->
+    <div class="preview-area" id="preview-area">
+      <div class="preview-wrapper" id="preview-wrapper">
+        <iframe id="preview-iframe" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        <div class="preview-overlay" id="preview-overlay"></div>
+      </div>
+    </div>
+
+    <!-- 右侧面板 -->
+    <div class="sidebar-right">
+      <div class="right-tabs">
+        <div class="right-tab active" data-panel="props">属性</div>
+        <div class="right-tab" data-panel="comps">组件</div>
+        <div class="right-tab" data-panel="notes">备注</div>
+      </div>
+      <!-- 属性面板 -->
+      <div class="right-panel active" id="panel-props">
+        <div class="prop-group">
+          <div class="prop-group-title">选中元素</div>
+          <div id="prop-element-info" style="font-size:12px;color:var(--ed-muted);padding:8px 0;">点击幻灯片中的元素进行编辑</div>
+        </div>
+        <div id="prop-fields"></div>
+      </div>
+      <!-- 组件面板 -->
+      <div class="right-panel" id="panel-comps">
+        <div class="comp-category">
+          <div class="comp-category-title">基础交互</div>
+          <div class="comp-item" data-comp="tab-group"><span class="comp-icon">📑</span>标签切换</div>
+          <div class="comp-item" data-comp="flip-card"><span class="comp-icon">🔄</span>翻转卡片</div>
+          <div class="comp-item" data-comp="hover-reveal"><span class="comp-icon">👁️</span>悬停揭示</div>
+          <div class="comp-item" data-comp="progress-bar"><span class="comp-icon">📊</span>进度条</div>
+          <div class="comp-item" data-comp="progress-ring"><span class="comp-icon">⭕</span>环形进度</div>
+          <div class="comp-item" data-comp="accordion"><span class="comp-icon">📋</span>手风琴</div>
+        </div>
+        <div class="comp-category">
+          <div class="comp-category-title">数据动效</div>
+          <div class="comp-item" data-comp="counter-up"><span class="comp-icon">🔢</span>数字跳动</div>
+          <div class="comp-item" data-comp="morph-number"><span class="comp-icon">🎰</span>数字翻牌</div>
+          <div class="comp-item" data-comp="typewriter"><span class="comp-icon">⌨️</span>打字机</div>
+          <div class="comp-item" data-comp="marquee"><span class="comp-icon">📜</span>滚动字幕</div>
+        </div>
+        <div class="comp-category">
+          <div class="comp-category-title">视觉增强</div>
+          <div class="comp-item" data-comp="zoom-hover"><span class="comp-icon">🔍</span>悬停放大</div>
+          <div class="comp-item" data-comp="glow-pulse"><span class="comp-icon">💫</span>呼吸光晕</div>
+          <div class="comp-item" data-comp="tilt-card"><span class="comp-icon">📐</span>倾斜卡片</div>
+          <div class="comp-item" data-comp="neon-underline"><span class="comp-icon">✨</span>霓虹下划线</div>
+          <div class="comp-item" data-comp="stagger"><span class="comp-icon">🎬</span>交错入场</div>
+        </div>
+        <div class="comp-category">
+          <div class="comp-category-title">高级交互</div>
+          <div class="comp-item" data-comp="quiz"><span class="comp-icon">❓</span>小测验</div>
+          <div class="comp-item" data-comp="carousel"><span class="comp-icon">🎠</span>轮播</div>
+          <div class="comp-item" data-comp="stepper"><span class="comp-icon">👣</span>步进器</div>
+          <div class="comp-item" data-comp="toggle-switch"><span class="comp-icon">🔘</span>开关切换</div>
+          <div class="comp-item" data-comp="sortable-list"><span class="comp-icon">↕️</span>拖拽排序</div>
+        </div>
+      </div>
+      <!-- 备注面板 -->
+      <div class="right-panel" id="panel-notes">
+        <div class="tts-bar">
+          <button class="tts-btn" id="tts-play-btn" title="朗读备注">▶</button>
+          <div class="tts-progress"><div class="tts-fill" id="tts-fill"></div></div>
+          <span style="font-size:11px;color:var(--ed-muted)" id="tts-status">就绪</span>
+        </div>
+        <textarea class="notes-editor" id="notes-editor" placeholder="在此编辑演讲者备注..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部状态栏 -->
+  <div class="statusbar">
+    <span class="status-dot" id="status-dot"></span>
+    <span id="status-text">就绪</span>
+    <div style="flex:1"></div>
+    <span id="status-page">0 / 0</span>
+  </div>
+</div>
+
+<!-- 文件选择弹窗 -->
+<div class="modal-overlay hidden" id="modal-open">
+  <div class="modal">
+    <h2>选择 HTML PPT 文件</h2>
+    <div class="file-list" id="file-list"></div>
+    <div style="margin-top:12px;text-align:center;">
+      <button class="tb-btn" id="btn-browse-disk" style="display:inline-block">📂 从磁盘选择文件...</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast 通知容器 -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Loading 遮罩 -->
+<div class="loading-overlay hidden" id="loading-overlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- 确认对话框 -->
+<div class="confirm-overlay hidden" id="confirm-overlay" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="confirm-box">
+    <h3 id="confirm-title">确认</h3>
+    <p id="confirm-message">确定要执行此操作吗？</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" id="confirm-cancel">取消</button>
+      <button class="btn-danger" id="confirm-ok">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 快捷键帮助 -->
+<div class="shortcuts-overlay hidden" id="shortcuts-overlay" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="shortcuts-box">
+    <h3>快捷键</h3>
+    <div class="sc-group">
+      <div class="sc-group-title">文件操作</div>
+      <div class="sc-row"><span>保存</span><div class="sc-keys"><kbd>Ctrl</kbd><kbd>S</kbd></div></div>
+      <div class="sc-row"><span>打开文件</span><div class="sc-keys"><kbd>Ctrl</kbd><kbd>O</kbd></div></div>
+    </div>
+    <div class="sc-group">
+      <div class="sc-group-title">编辑操作</div>
+      <div class="sc-row"><span>撤销</span><div class="sc-keys"><kbd>Ctrl</kbd><kbd>Z</kbd></div></div>
+      <div class="sc-row"><span>重做</span><div class="sc-keys"><kbd>Ctrl</kbd><kbd>Y</kbd></div></div>
+      <div class="sc-row"><span>删除选中元素</span><div class="sc-keys"><kbd>Delete</kbd></div></div>
+      <div class="sc-row"><span>编辑文字</span><div class="sc-keys"><span style="font-size:12px;color:var(--ed-muted)">双击元素</span></div></div>
+      <div class="sc-row"><span>退出编辑</span><div class="sc-keys"><kbd>Esc</kbd></div></div>
+    </div>
+    <div class="sc-group">
+      <div class="sc-group-title">幻灯片导航</div>
+      <div class="sc-row"><span>上一页</span><div class="sc-keys"><kbd>←</kbd> / <kbd>PageUp</kbd></div></div>
+      <div class="sc-row"><span>下一页</span><div class="sc-keys"><kbd>→</kbd> / <kbd>PageDown</kbd> / <kbd>Space</kbd></div></div>
+      <div class="sc-row"><span>第一页</span><div class="sc-keys"><kbd>Home</kbd></div></div>
+      <div class="sc-row"><span>最后一页</span><div class="sc-keys"><kbd>End</kbd></div></div>
+    </div>
+    <div class="sc-group">
+      <div class="sc-group-title">其他</div>
+      <div class="sc-row"><span>TTS 朗读</span><div class="sc-keys"><kbd>T</kbd></div></div>
+      <div class="sc-row"><span>播放演示</span><div class="sc-keys"><kbd>F5</kbd></div></div>
+      <div class="sc-row"><span>帮助</span><div class="sc-keys"><kbd>?</kbd></div></div>
+    </div>
+    <div style="text-align:center;margin-top:16px;">
+      <button class="tb-btn" onclick="document.getElementById('shortcuts-overlay').classList.add('hidden')" style="display:inline-block">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 隐藏的图片上传 input -->
+<input type="file" id="img-input" accept="image/*" style="display:none">
+<!-- 隐藏的 HTML 文件选择 input -->
+<input type="file" id="html-input" accept=".html,.htm" style="display:none">
+
+<script src="editor_bridge.js"></script>
+<script src="tts.js"></script>
+<script src="editor_core.js"></script>
+</body>
+</html>

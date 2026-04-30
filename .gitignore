@@ -1,0 +1,6 @@
+node_modules/
+uploads/*
+!uploads/.gitkeep
+test_comprehensive.js
+take_screenshots.js
+*.backup
